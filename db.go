@@ -1,6 +1,7 @@
 package main
 
 import (
+	"net/url"
 	"strconv"
 
 	"github.com/satori/go.uuid"
@@ -76,9 +77,19 @@ func (db *db) Post(page string, post *Post) (uuid.UUID, error) {
 	return uuid, db.client.RPush("/"+page, uuid.String()).Err()
 }
 
-func ConnectDB(addr string) DB {
+func ConnectDB(addr string) (DB, error) {
+	url, err := url.Parse(addr)
+	if err != nil {
+		return nil, err
+	}
+
+	var password string
+	if pw, ok := url.User.Password(); ok {
+		password = pw
+	}
 	client := redis.NewClient(&redis.Options{
-		Addr: addr,
+		Addr:     url.Host,
+		Password: password,
 	})
-	return &db{client}
+	return &db{client}, nil
 }

@@ -2,13 +2,17 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := ConnectDB("localhost:6379")
+	db, err := ConnectDB(os.Getenv("REDIS_URL"))
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 	r.LoadHTMLGlob("*.html")

@@ -2,29 +2,18 @@
 
 <html lang="en">
 	<head>
-		<title>Challenge 15</title>
+		<title>Agile Peak</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 	</head>
 	<body style="margin-top: 20px">
 		<div class="container">
-			{{ range .notes }}
-				<blockquote title="{{ .ID }}">
-					<p>{{ .Text }}</p>
-					<footer>{{ .Name }}</footer>
-				</blockquote>
-			{{ end }}
-			<hr/>
-			<form method="post">
-				<div class="col-xs-6" style="padding: 0">
-					<input name="name" class="form-control" placeholder="Your Name"></input>
-				</div>
-				<div class="col-xs-6" style="padding: 0">
-					<input name="id" class="form-control" placeholder="Your Computer Number"></input>
-				</div>
-				<textarea name="text" class="form-control" rows=5 placeholder="Type your suggestion here"></textarea>
-				<button class="btn btn-primary form-control">Submit</button>
-			</form>
+			<h1>Pages</h1>
+			<ul>
+				{{ range .pages }}
+					<li><a href="/{{.}}">{{.}}</a></li>
+				{{ end }}
+			</ul>
 		</div>
 	</body>
 </html>

@@ -17,8 +17,15 @@ func main() {
 	r := gin.Default()
 	r.LoadHTMLGlob("*.html")
 
-	r.Any("/", func(c *gin.Context) {
-		c.Redirect(http.StatusTemporaryRedirect, "/default")
+	r.GET("/", func(c *gin.Context) {
+		pages, err := db.ListPages()
+		if err != nil {
+			panic(err)
+		}
+
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"pages": pages,
+		})
 	})
 	r.GET("/:name", func(c *gin.Context) {
 		uuids, err := db.List(c.Param("name"))
@@ -34,7 +41,7 @@ func main() {
 			}
 		}
 
-		c.HTML(http.StatusOK, "index.html", gin.H{
+		c.HTML(http.StatusOK, "page.html", gin.H{
 			"name":  c.Param("name"),
 			"notes": notes,
 		})

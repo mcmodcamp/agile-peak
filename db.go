@@ -12,6 +12,7 @@ type DB interface {
 	Clear(page string) error
 	Get(uuid uuid.UUID) (*Post, error)
 	List(page string) ([]uuid.UUID, error)
+	ListPages() ([]string, error)
 	Post(page string, post *Post) (uuid.UUID, error)
 }
 
@@ -63,6 +64,10 @@ func (db *db) List(page string) ([]uuid.UUID, error) {
 	return uuids, err
 }
 
+func (db *db) ListPages() ([]string, error) {
+	return db.client.SMembers("pages").Result()
+}
+
 func (db *db) Post(page string, post *Post) (uuid.UUID, error) {
 	uuid := uuid.NewV4()
 	if err := db.client.HSet(uuid.String(), "name", post.Name).Err(); err != nil {
@@ -74,7 +79,12 @@ func (db *db) Post(page string, post *Post) (uuid.UUID, error) {
 	if err := db.client.HSet(uuid.String(), "text", post.Text).Err(); err != nil {
 		return uuid, err
 	}
-	return uuid, db.client.RPush("/"+page, uuid.String()).Err()
+
+	if err := db.client.RPush("/"+page, uuid.String()).Err(); err != nil {
+		return uuid, err
+	}
+
+	return uuid, db.client.SAdd("pages", page).Err()
 }
 
 func ConnectDB(addr string) (DB, error) {
